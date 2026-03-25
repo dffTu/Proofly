@@ -1,0 +1,251 @@
+[
+  {
+    "model": "graph.node",
+    "pk": 1,
+    "fields": {
+      "slug": "axiom-closure-add",
+      "title": "Замкнутость относительно сложения",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Замкнутость относительно сложения\n\nДля любых $a, b \\in \\mathbb{F}$:\n\n$$a + b \\in \\mathbb{F}$$\n\nЭто означает, что сложение двух элементов поля всегда даёт элемент того же поля. Данное свойство является **аксиомой** — оно принимается без доказательства как основа всей алгебраической системы."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 2,
+    "fields": {
+      "slug": "axiom-commutativity-add",
+      "title": "Коммутативность сложения",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Коммутативность сложения\n\nДля любых $a, b \\in \\mathbb{F}$:\n\n$$a + b = b + a$$\n\nПорядок слагаемых не влияет на результат. Это свойство — одна из основных аксиом поля, принимаемых без доказательства."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 3,
+    "fields": {
+      "slug": "axiom-associativity-add",
+      "title": "Ассоциативность сложения",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Ассоциативность сложения\n\nДля любых $a, b, c \\in \\mathbb{F}$:\n\n$$(a + b) + c = a + (b + c)$$\n\nПри сложении нескольких чисел результат не зависит от расстановки скобок. Данная аксиома позволяет нам писать $a + b + c$ без скобок."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 4,
+    "fields": {
+      "slug": "axiom-additive-identity",
+      "title": "Существование нуля",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Существование нейтрального элемента (нуля)\n\nСуществует элемент $0 \\in \\mathbb{F}$ такой, что для любого $a \\in \\mathbb{F}$:\n\n$$a + 0 = a$$\n\nЭлемент $0$ называется **нейтральным элементом** (нулём) по сложению. Аксиома постулирует его существование, но не единственность — единственность будет **доказана** как теорема ([Единственность нуля](#thm-unique-zero))."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 5,
+    "fields": {
+      "slug": "axiom-additive-inverse",
+      "title": "Существование противоположного элемента",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Существование противоположного элемента\n\nДля любого $a \\in \\mathbb{F}$ существует элемент $(-a) \\in \\mathbb{F}$ такой, что:\n\n$$a + (-a) = 0$$\n\nЭлемент $(-a)$ называется **противоположным** к $a$. Аксиома гарантирует его существование. Единственность будет доказана ([Единственность противоположного элемента](#thm-unique-inverse))."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 6,
+    "fields": {
+      "slug": "axiom-distributivity",
+      "title": "Дистрибутивность",
+      "node_type": "axiom",
+      "level": 0,
+      "description": "## Аксиома: Дистрибутивность умножения относительно сложения\n\nДля любых $a, b, c \\in \\mathbb{F}$:\n\n$$a \\cdot (b + c) = a \\cdot b + a \\cdot c$$\n\nЭта аксиома связывает операции сложения и умножения, позволяя «раскрывать скобки». Из неё будут выведены многие важные свойства, в том числе [произведение на ноль](#thm-zero-product)."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 7,
+    "fields": {
+      "slug": "thm-unique-zero",
+      "title": "Единственность нуля",
+      "node_type": "theorem",
+      "level": 1,
+      "description": "## Теорема: Нейтральный элемент по сложению единственен\n\n**Утверждение:** В поле $\\mathbb{F}$ существует ровно один нейтральный элемент по сложению.\n\n**Доказательство:**\n\nПредположим, что существуют два нуля: $0$ и $0'$, то есть:\n$$a + 0 = a \\quad \\text{и} \\quad a + 0' = a \\quad \\text{для всех } a$$\n\nПоложим $a = 0'$ в первом равенстве:\n$$0' + 0 = 0'$$\n\nПоложим $a = 0$ во втором равенстве:\n$$0 + 0' = 0$$\n\nПо [аксиоме коммутативности](#axiom-commutativity-add): $0' + 0 = 0 + 0'$, значит:\n$$0' = 0 \\quad \\blacksquare$$\n\n**Использованные аксиомы:** [существование нуля](#axiom-additive-identity), [коммутативность](#axiom-commutativity-add), [ассоциативность](#axiom-associativity-add)."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 8,
+    "fields": {
+      "slug": "thm-unique-inverse",
+      "title": "Единственность противоположного элемента",
+      "node_type": "theorem",
+      "level": 1,
+      "description": "## Теорема: Противоположный элемент единственен\n\n**Утверждение:** Для каждого $a \\in \\mathbb{F}$ противоположный элемент $(-a)$ единственен.\n\n**Доказательство:**\n\nПусть $b$ и $c$ — оба противоположны к $a$, то есть:\n$$a + b = 0 \\quad \\text{и} \\quad a + c = 0$$\n\nРассмотрим:\n$$b = b + 0 = b + (a + c) = (b + a) + c = 0 + c = c$$\n\nЗдесь использовались:\n- [Существование нуля](#axiom-additive-identity): $b + 0 = b$\n- Подстановку $0 = a + c$\n- [Ассоциативность](#axiom-associativity-add): $(b + a) + c$\n- $b + a = 0$ по условию\n- [Существование противоположного](#axiom-additive-inverse): $0 + c = c$\n\nСледовательно, $b = c$. $\\blacksquare$"
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 9,
+    "fields": {
+      "slug": "thm-cancellation",
+      "title": "Закон сокращения",
+      "node_type": "theorem",
+      "level": 1,
+      "description": "## Теорема: Закон сокращения по сложению\n\n**Утверждение:** Если $a + b = a + c$, то $b = c$.\n\n**Доказательство:**\n\nДано: $a + b = a + c$.\n\nПо [аксиоме существования противоположного](#axiom-additive-inverse) к $a$ существует $(-a)$. Прибавим $(-a)$ к обеим частям слева:\n\n$$(-a) + (a + b) = (-a) + (a + c)$$\n\nПо [ассоциативности](#axiom-associativity-add):\n$$((-a) + a) + b = ((-a) + a) + c$$\n\n$$0 + b = 0 + c$$\n\nПо [нейтральности нуля](#axiom-additive-identity) и [коммутативности](#axiom-commutativity-add):\n$$b = c \\quad \\blacksquare$$"
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 10,
+    "fields": {
+      "slug": "thm-double-negation",
+      "title": "Двойное отрицание: $-(-a) = a$",
+      "node_type": "theorem",
+      "level": 2,
+      "description": "## Теорема: Двойное отрицание\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $-(-a) = a$.\n\n**Доказательство:**\n\nПо определению, $(-a)$ — противоположный к $a$, то есть:\n$$a + (-a) = 0$$\n\nЭто означает, что $a$ является противоположным к $(-a)$. По теореме о [единственности противоположного элемента](#thm-unique-inverse), противоположный к $(-a)$ единственен.\n\nСледовательно:\n$$-(-a) = a \\quad \\blacksquare$$\n\n**Использованные результаты:** [существование противоположного](#axiom-additive-inverse), [единственность противоположного](#thm-unique-inverse)."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 11,
+    "fields": {
+      "slug": "thm-zero-product",
+      "title": "Произведение на ноль: $0 \\cdot a = 0$",
+      "node_type": "theorem",
+      "level": 2,
+      "description": "## Теорема: Произведение любого элемента на ноль равно нулю\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $0 \\cdot a = 0$.\n\n**Доказательство:**\n\nЗапишем:\n$$0 \\cdot a = (0 + 0) \\cdot a$$\n\nПо [дистрибутивности](#axiom-distributivity):\n$$(0 + 0) \\cdot a = 0 \\cdot a + 0 \\cdot a$$\n\nОбозначим $x = 0 \\cdot a$. Тогда $x = x + x$. Прибавим $(-x)$ к обеим частям и применим [закон сокращения](#thm-cancellation):\n$$0 = x$$\n\nСледовательно, $0 \\cdot a = 0$. $\\blacksquare$\n\n**Использованные результаты:** [существование нуля](#axiom-additive-identity), [дистрибутивность](#axiom-distributivity), [закон сокращения](#thm-cancellation)."
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 12,
+    "fields": {
+      "slug": "thm-neg-one-product",
+      "title": "$(-1) \\cdot a = -a$",
+      "node_type": "theorem",
+      "level": 2,
+      "description": "## Теорема: Умножение на $-1$\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $(-1) \\cdot a = -a$.\n\n**Доказательство:**\n\nРассмотрим:\n$$a + (-1) \\cdot a = 1 \\cdot a + (-1) \\cdot a = (1 + (-1)) \\cdot a = 0 \\cdot a = 0$$\n\nЗдесь использовались:\n- Аксиома нейтрального элемента умножения: $1 \\cdot a = a$\n- [Дистрибутивность](#axiom-distributivity): $(1 + (-1)) \\cdot a = 1 \\cdot a + (-1) \\cdot a$\n- [Произведение на ноль](#thm-zero-product): $0 \\cdot a = 0$\n\nТаким образом, $(-1) \\cdot a$ является противоположным к $a$. По [единственности противоположного](#thm-unique-inverse):\n$$(-1) \\cdot a = -a \\quad \\blacksquare$$"
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 13,
+    "fields": {
+      "slug": "thm-neg-product",
+      "title": "$(-a) \\cdot b = -(a \\cdot b)$",
+      "node_type": "theorem",
+      "level": 3,
+      "description": "## Теорема: Произведение противоположного элемента\n\n**Утверждение:** $(-a) \\cdot b = -(a \\cdot b)$.\n\n**Доказательство:**\n\n$$(-a) \\cdot b = ((-1) \\cdot a) \\cdot b = (-1) \\cdot (a \\cdot b) = -(a \\cdot b)$$\n\nПошагово:\n1. $(-a) = (-1) \\cdot a$ — по теореме [$(-1) \\cdot a = -a$](#thm-neg-one-product) в обратную сторону\n2. $((-1) \\cdot a) \\cdot b = (-1) \\cdot (a \\cdot b)$ — по ассоциативности умножения\n3. $(-1) \\cdot (a \\cdot b) = -(a \\cdot b)$ — снова по теореме [$(-1) \\cdot a = -a$](#thm-neg-one-product)\n\n$\\blacksquare$"
+    }
+  },
+  {
+    "model": "graph.node",
+    "pk": 14,
+    "fields": {
+      "slug": "thm-neg-neg-product",
+      "title": "$(-a)(-b) = ab$",
+      "node_type": "theorem",
+      "level": 3,
+      "description": "## Теорема: Произведение двух противоположных элементов\n\n**Утверждение:** $(-a)(-b) = a \\cdot b$.\n\n**Доказательство:**\n\n$$(-a)(-b) = -(a \\cdot (-b)) = -(-(a \\cdot b)) = a \\cdot b$$\n\nПошагово:\n1. $(-a)(-b) = -(a(-b))$ — по теореме [$(-a) \\cdot b = -(ab)$](#thm-neg-product) с заменой $b \\to (-b)$\n2. $-(a(-b)) = -(-(ab))$ — по той же теореме [$(-a) \\cdot b = -(ab)$](#thm-neg-product): $a \\cdot (-b) = -(ab)$\n3. $-(-(ab)) = ab$ — по теореме [двойного отрицания](#thm-double-negation)\n\n$\\blacksquare$"
+    }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 1,
+    "fields": { "from_node": 3, "to_node": 7 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 2,
+    "fields": { "from_node": 4, "to_node": 7 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 3,
+    "fields": { "from_node": 2, "to_node": 7 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 4,
+    "fields": { "from_node": 3, "to_node": 8 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 5,
+    "fields": { "from_node": 4, "to_node": 8 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 6,
+    "fields": { "from_node": 5, "to_node": 8 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 7,
+    "fields": { "from_node": 2, "to_node": 9 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 8,
+    "fields": { "from_node": 3, "to_node": 9 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 9,
+    "fields": { "from_node": 5, "to_node": 9 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 10,
+    "fields": { "from_node": 8, "to_node": 10 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 11,
+    "fields": { "from_node": 5, "to_node": 10 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 12,
+    "fields": { "from_node": 6, "to_node": 11 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 13,
+    "fields": { "from_node": 4, "to_node": 11 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 14,
+    "fields": { "from_node": 9, "to_node": 11 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 15,
+    "fields": { "from_node": 10, "to_node": 12 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 16,
+    "fields": { "from_node": 11, "to_node": 12 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 17,
+    "fields": { "from_node": 12, "to_node": 13 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 18,
+    "fields": { "from_node": 13, "to_node": 14 }
+  },
+  {
+    "model": "graph.edge",
+    "pk": 19,
+    "fields": { "from_node": 10, "to_node": 14 }
+  }
+]

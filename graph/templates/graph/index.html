@@ -1,0 +1,37 @@
+{% extends "graph/base.html" %}
+{% block title %}Proofly — Граф теорем алгебры{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div id="header">
+  <h1>Proofly</h1>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot axiom"></div>
+      <span>Аксиома</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot theorem"></div>
+      <span>Теорема</span>
+    </div>
+  </div>
+</div>
+
+<!-- Graph canvas -->
+<div id="graph-container">
+  <svg id="graph-svg"></svg>
+</div>
+
+<!-- Proof panel (slides in from right) -->
+<div id="proof-panel">
+  <div id="panel-header">
+    <span id="panel-type-badge" class="panel-type-badge"></span>
+    <span id="panel-title"></span>
+    <button id="panel-close" title="Закрыть">×</button>
+  </div>
+  <div id="panel-body"></div>
+</div>
+
+<!-- Bottom hint -->
+<div id="hint">Нажмите на узел, чтобы увидеть доказательство</div>
+{% endblock %}
