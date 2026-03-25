@@ -15,11 +15,21 @@ services:
       interval: 5s
       retries: 5
 
+  migrate:
+    image: migrate/migrate
+    command: ["-path", "/sql", "-database", "postgres://proofly:proofly@db:5432/proofly?sslmode=disable", "up"]
+    volumes:
+      - ./sql:/sql
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
   web:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app          # монтируем код — изменения применяются без пересборки
+      - .:/app
     ports:
       - "8000:8000"
     environment:
@@ -30,6 +40,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:

@@ -1,4 +1,3 @@
--- Таблица узлов графа (аксиомы и теоремы)
 CREATE TABLE IF NOT EXISTS graph_node (
     id          BIGSERIAL    PRIMARY KEY,
     slug        VARCHAR(100) NOT NULL UNIQUE,
@@ -8,8 +7,6 @@ CREATE TABLE IF NOT EXISTS graph_node (
     description TEXT         NOT NULL
 );
 
--- Таблица рёбер графа (зависимости между узлами)
--- from_node_id -> to_node_id означает: to_node доказывается с помощью from_node
 CREATE TABLE IF NOT EXISTS graph_edge (
     id           BIGSERIAL PRIMARY KEY,
     from_node_id BIGINT    NOT NULL REFERENCES graph_node(id) ON DELETE CASCADE,
