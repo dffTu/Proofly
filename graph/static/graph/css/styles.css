@@ -83,7 +83,7 @@ body {
   stroke: #fff;
   stroke-width: 1.5px;
   cursor: pointer;
-  transition: filter 0.15s ease, opacity 0.3s ease;
+  transition: filter 0.15s ease, opacity 0.25s ease;
 }
 
 .node circle:hover {
@@ -111,11 +111,11 @@ body {
 .edge {
   stroke: #3a3d4f;
   stroke-width: 1.5px;
-  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+  transition: opacity 0.25s ease, stroke-width 0.25s ease;
 }
 
 .node foreignObject {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 /* ── Proof panel ── */
@@ -130,12 +130,14 @@ body {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
   overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
 }
 
 #proof-panel.open {
   right: 0;
+  transform: translateX(0);
 }
 
 #panel-header {
@@ -226,6 +228,98 @@ body {
 
 #panel-body a[href^="#"]:hover {
   color: #a8d0ff;
+}
+
+/* ── Search ── */
+.search-wrapper {
+  position: relative;
+  margin-left: 1rem;
+}
+
+#search-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #2a2d3a;
+  border-radius: 4px;
+  color: #e8e8e8;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  width: 180px;
+  outline: none;
+  transition: border-color 0.2s, width 0.2s;
+}
+
+#search-input::placeholder {
+  color: #4a4f68;
+}
+
+#search-input:focus {
+  border-color: #4a90d9;
+  width: 260px;
+}
+
+#search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: #161921;
+  border: 1px solid #2a2d3a;
+  border-radius: 6px;
+  display: none;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.search-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #1e2130;
+  transition: background 0.15s;
+}
+
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background: rgba(74, 144, 217, 0.1);
+}
+
+.search-item-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.search-item-badge.axiom {
+  background: rgba(74, 144, 217, 0.2);
+  color: #4a90d9;
+}
+
+.search-item-badge.theorem {
+  background: rgba(232, 168, 56, 0.2);
+  color: #e8a838;
+}
+
+.search-item-title {
+  font-size: 0.85rem;
+  color: #e8e8e8;
+}
+
+.search-item-snippet {
+  font-size: 0.75rem;
+  color: #6a6f88;
+  margin-top: 3px;
+  line-height: 1.4;
 }
 
 /* ── Language switcher ── */

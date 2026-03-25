@@ -12,8 +12,8 @@ const COLOR_ACTIVE  = '#e05555';
 let currentLang = localStorage.getItem('lang') || 'ru';
 
 const STRINGS = {
-  en: { axiom: 'Axiom', theorem: 'Theorem', hint: 'Click a node to view the proof' },
-  ru: { axiom: 'Аксиома', theorem: 'Теорема', hint: 'Нажмите на узел, чтобы увидеть доказательство' },
+  en: { axiom: 'Axiom', theorem: 'Theorem', hint: 'Click a node to view the proof', search: 'Search\u2026' },
+  ru: { axiom: 'Аксиома', theorem: 'Теорема', hint: 'Нажмите на узел, чтобы увидеть доказательство', search: 'Поиск\u2026' },
 };
 
 function t(key) {
@@ -34,6 +34,8 @@ function applyI18n() {
   });
   document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
   document.getElementById('lang-ru').classList.toggle('active', currentLang === 'ru');
+  const si = document.getElementById('search-input');
+  if (si) si.placeholder = t('search');
 }
 
 // ── Init ──────────────────────────────────────────────────────────
@@ -136,7 +138,7 @@ function initGraph(data) {
         .on('drag',  dragged)
         .on('end',   dragEnd)
       )
-      .on('click', (event, d) => openPanel(d));
+      .on('click', (event, d) => { event.stopPropagation(); openPanel(d); });
 
   nodeSel.append('circle')
     .attr('r', NODE_RADIUS)
@@ -192,17 +194,23 @@ function initGraph(data) {
   }
 
   // ── Drag handlers ─────────────────────────────────────────────
+  let didDrag = false;
+
   function dragStart(event, d) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
+    didDrag = false;
     d.fx = d.x;
   }
 
   function dragged(event, d) {
+    if (!didDrag) {
+      didDrag = true;
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+    }
     d.fx = event.x;
   }
 
   function dragEnd(event, d) {
-    if (!event.active) simulation.alphaTarget(0);
+    if (didDrag && !event.active) simulation.alphaTarget(0);
     d.fx = null;
   }
 
@@ -215,7 +223,6 @@ function initGraph(data) {
 
   function setActiveNode(d) {
     if (!d) {
-      // Reset everything
       activeNodeId = null;
       nodeSel.select('circle')
         .attr('fill', nodeColor)
@@ -228,6 +235,8 @@ function initGraph(data) {
         .style('opacity', 1);
       return;
     }
+
+    if (activeNodeId === d.id) return;
 
     activeNodeId = d.id;
 
@@ -291,8 +300,12 @@ function initGraph(data) {
   let activePanelNode = null;
 
   function openPanel(d) {
+    const wasOpen = panel.classList.contains('open');
     activePanelNode = d;
-    setActiveNode(d);
+
+    // Open panel FIRST (before highlight) so the slide-in transition
+    // doesn't cause a reflow that flickers the graph
+    if (!wasOpen) panel.classList.add('open');
 
     const title = getTitle(d);
     panelTitle.textContent  = title.replace(/\$[^$]*\$/g, '').trim();
@@ -309,7 +322,13 @@ function initGraph(data) {
       throwOnError: false,
     });
 
-    panel.classList.add('open');
+    // Apply highlight AFTER panel content is set, in next frame
+    // to avoid the panel slide-in transition causing reflow flicker
+    if (!wasOpen) {
+      requestAnimationFrame(() => setActiveNode(d));
+    } else {
+      setActiveNode(d);
+    }
 
     const hint = document.getElementById('hint');
     if (hint) hint.style.opacity = '0';
@@ -332,6 +351,109 @@ function initGraph(data) {
 
   document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
   document.getElementById('lang-ru').addEventListener('click', () => switchLanguage('ru'));
+
+  // ── Search ───────────────────────────────────────────────────
+  const searchInput   = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function stripLatex(s) {
+    return s.replace(/\$\$[^$]*\$\$/g, ' ').replace(/\$[^$]*\$/g, ' ').replace(/\\[a-zA-Z]+/g, '');
+  }
+
+  function extractSnippet(text, query, maxLen) {
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(query);
+    if (idx === -1) return '';
+    const start = Math.max(0, idx - 30);
+    const end = Math.min(text.length, idx + query.length + maxLen);
+    let snippet = text.slice(start, end).trim();
+    if (start > 0) snippet = '\u2026' + snippet;
+    if (end < text.length) snippet += '\u2026';
+    return snippet;
+  }
+
+  function highlightSearchMatches(matchIds) {
+    if (!matchIds || !matchIds.size) {
+      nodeSel.select('circle').attr('fill', nodeColor).style('opacity', 1);
+      nodeSel.select('foreignObject').style('opacity', 1);
+      edgeSel
+        .attr('stroke', '#3a3d4f').attr('stroke-width', 1.5)
+        .attr('marker-end', 'url(#arrowhead)').style('opacity', 1);
+      return;
+    }
+    nodeSel.select('circle')
+      .attr('fill', nodeColor)
+      .style('opacity', n => matchIds.has(n.id) ? 1 : 0.1);
+    nodeSel.select('foreignObject').style('opacity', function() {
+      return matchIds.has(d3.select(this.parentNode).datum().id) ? 1 : 0.1;
+    });
+    edgeSel
+      .attr('stroke', '#3a3d4f').attr('stroke-width', 1)
+      .attr('marker-end', 'url(#arrowhead)').style('opacity', 0.05);
+  }
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (q.length < 2) {
+      searchResults.style.display = 'none';
+      if (!activeNodeId) highlightSearchMatches(null);
+      return;
+    }
+
+    const allMatches = data.nodes.filter(n => {
+      const title = stripLatex(getTitle(n)).toLowerCase();
+      const desc  = stripLatex(getDescription(n)).toLowerCase();
+      return title.includes(q) || desc.includes(q);
+    });
+
+    // Выделяем ВСЕ подходящие на графе
+    highlightSearchMatches(new Set(allMatches.map(n => n.id)));
+
+    // В dropdown — только первые 8
+    const matches = allMatches.slice(0, 8);
+    if (!matches.length) { searchResults.style.display = 'none'; return; }
+
+    searchResults.innerHTML = matches.map(n => {
+      const title = getTitle(n);
+      const desc  = getDescription(n);
+      const snippet = extractSnippet(stripLatex(desc), q, 60);
+      const badge = t(n.node_type);
+      return `<div class="search-item" data-slug="${n.slug}">
+        <span class="search-item-badge ${n.node_type}">${escapeHtml(badge)}</span>
+        <span class="search-item-title">${escapeHtml(title)}</span>
+        ${snippet ? `<div class="search-item-snippet">${escapeHtml(snippet)}</div>` : ''}
+      </div>`;
+    }).join('');
+    searchResults.style.display = 'block';
+  });
+
+  searchResults.addEventListener('click', e => {
+    const item = e.target.closest('.search-item');
+    if (!item) return;
+    const node = nodeData.find(n => n.slug === item.dataset.slug);
+    searchResults.style.display = 'none';
+    searchInput.value = '';
+    if (node) openPanel(node);  // setActiveNode handles highlighting
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrapper')) {
+      searchResults.style.display = 'none';
+    }
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      searchResults.style.display = 'none';
+      highlightSearchMatches(null);
+      searchInput.blur();
+    }
+  });
 
   // ── Responsive resize ─────────────────────────────────────────
   window.addEventListener('resize', () => {
