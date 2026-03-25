@@ -27,11 +27,11 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:80
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "80:80"
     environment:
       DATABASE_URL: postgres://proofly:proofly@db:5432/proofly
       DEBUG: "True"
