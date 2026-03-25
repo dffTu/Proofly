@@ -83,7 +83,7 @@ body {
   stroke: #fff;
   stroke-width: 1.5px;
   cursor: pointer;
-  transition: filter 0.15s ease;
+  transition: filter 0.15s ease, opacity 0.3s ease;
 }
 
 .node circle:hover {
@@ -111,6 +111,11 @@ body {
 .edge {
   stroke: #3a3d4f;
   stroke-width: 1.5px;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.node foreignObject {
+  transition: opacity 0.3s ease;
 }
 
 /* ── Proof panel ── */
@@ -221,6 +226,38 @@ body {
 
 #panel-body a[href^="#"]:hover {
   color: #a8d0ff;
+}
+
+/* ── Language switcher ── */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  margin-left: 1rem;
+}
+
+.lang-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: #4a4f68;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.lang-btn:hover {
+  color: #8a8fa8;
+}
+
+.lang-btn.active {
+  color: #a0c4ff;
+  border-color: #2a4060;
+  background: rgba(74, 144, 217, 0.1);
 }
 
 /* ── Hint ── */

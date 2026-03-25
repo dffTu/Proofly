@@ -8,12 +8,17 @@
   <div class="legend">
     <div class="legend-item">
       <div class="legend-dot axiom"></div>
-      <span>Аксиома</span>
+      <span data-i18n="axiom"></span>
     </div>
     <div class="legend-item">
       <div class="legend-dot theorem"></div>
-      <span>Теорема</span>
+      <span data-i18n="theorem"></span>
     </div>
+  </div>
+  <div class="lang-switcher">
+    <button id="lang-en" class="lang-btn">EN</button>
+    <span style="color:#2a2d3a">|</span>
+    <button id="lang-ru" class="lang-btn">RU</button>
   </div>
 </div>
 
@@ -27,11 +32,11 @@
   <div id="panel-header">
     <span id="panel-type-badge" class="panel-type-badge"></span>
     <span id="panel-title"></span>
-    <button id="panel-close" title="Закрыть">×</button>
+    <button id="panel-close" title="×">×</button>
   </div>
   <div id="panel-body"></div>
 </div>
 
 <!-- Bottom hint -->
-<div id="hint">Нажмите на узел, чтобы увидеть доказательство</div>
+<div id="hint" data-i18n="hint"></div>
 {% endblock %}

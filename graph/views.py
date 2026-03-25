@@ -12,10 +12,10 @@ def graph_data(request):
         {
             'id': node.pk,
             'slug': node.slug,
-            'title': node.title,
+            'title': {'en': node.title_en, 'ru': node.title_ru},
+            'description': {'en': node.description_en, 'ru': node.description_ru},
             'node_type': node.node_type,
             'level': node.level,
-            'description': node.description,
         }
         for node in Node.objects.all()
     ]

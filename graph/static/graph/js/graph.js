@@ -8,7 +8,37 @@ const COLOR_AXIOM   = '#4a90d9';
 const COLOR_THEOREM = '#e8a838';
 const COLOR_ACTIVE  = '#e05555';
 
+// ── i18n ──────────────────────────────────────────────────────────
+let currentLang = localStorage.getItem('lang') || 'ru';
+
+const STRINGS = {
+  en: { axiom: 'Axiom', theorem: 'Theorem', hint: 'Click a node to view the proof' },
+  ru: { axiom: 'Аксиома', theorem: 'Теорема', hint: 'Нажмите на узел, чтобы увидеть доказательство' },
+};
+
+function t(key) {
+  return (STRINGS[currentLang] || STRINGS.en)[key];
+}
+
+function getTitle(d) {
+  return d.title[currentLang] || d.title.en || d.title.ru || d.slug;
+}
+
+function getDescription(d) {
+  return d.description[currentLang] || d.description.en || d.description.ru || '';
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+  document.getElementById('lang-ru').classList.toggle('active', currentLang === 'ru');
+}
+
+// ── Init ──────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  applyI18n();
   fetch('/api/graph/')
     .then(r => r.json())
     .then(initGraph);
@@ -20,7 +50,6 @@ function initGraph(data) {
   const width     = container.clientWidth;
   const height    = container.clientHeight;
 
-  // Slug → node datum lookup for cross-reference links
   const nodeBySlug = new Map(data.nodes.map(n => [n.slug, n]));
 
   function levelY(level) {
@@ -28,8 +57,10 @@ function initGraph(data) {
     return height - padding - level * LEVEL_HEIGHT;
   }
 
-  // ── Arrowhead marker ──────────────────────────────────────────
-  svg.append('defs').append('marker')
+  // ── Arrowhead markers ─────────────────────────────────────────
+  const defs = svg.append('defs');
+
+  defs.append('marker')
     .attr('id', 'arrowhead')
     .attr('viewBox', '0 -5 10 10')
     .attr('refX', NODE_RADIUS + 10)
@@ -40,6 +71,18 @@ function initGraph(data) {
     .append('path')
       .attr('d', 'M0,-5L10,0L0,5')
       .attr('fill', '#5a5f78');
+
+  defs.append('marker')
+    .attr('id', 'arrowhead-active')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', NODE_RADIUS + 10)
+    .attr('refY', 0)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 6)
+    .attr('orient', 'auto')
+    .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', COLOR_ACTIVE);
 
   const mainGroup = svg.append('g').attr('class', 'main');
 
@@ -62,11 +105,27 @@ function initGraph(data) {
   // ── Nodes ─────────────────────────────────────────────────────
   const nodeGroup = mainGroup.append('g').attr('class', 'nodes');
 
-  const nodeData = data.nodes.map(n => ({
-    ...n,
-    x:  width / 2,
-    fy: levelY(n.level),
-  }));
+  // Spread nodes horizontally within each level for a clean initial layout
+  const nodesByLevel = new Map();
+  data.nodes.forEach(n => {
+    if (!nodesByLevel.has(n.level)) nodesByLevel.set(n.level, []);
+    nodesByLevel.get(n.level).push(n);
+  });
+
+  const nodeData = data.nodes.map(n => {
+    const lvlNodes = nodesByLevel.get(n.level);
+    const idx   = lvlNodes.indexOf(n);
+    const count = lvlNodes.length;
+    // Give each node ~140px horizontal space so they don't overlap on start
+    const neededWidth = count * 140;
+    const spread = Math.max(neededWidth, width * 0.6);
+    const startX = (width - spread) / 2;
+    return {
+      ...n,
+      x:  count > 1 ? startX + (idx / (count - 1)) * spread : width / 2,
+      fy: levelY(n.level),
+    };
+  });
 
   const nodeSel = nodeGroup.selectAll('g.node')
     .data(nodeData, d => d.id)
@@ -83,9 +142,10 @@ function initGraph(data) {
     .attr('r', NODE_RADIUS)
     .attr('fill', d => d.node_type === 'axiom' ? COLOR_AXIOM : COLOR_THEOREM);
 
-  // Labels via foreignObject so KaTeX renders and CSS wraps text
-  nodeSel.each(function(d) {
-    const fo = d3.select(this).append('foreignObject')
+  function renderNodeLabel(sel, d) {
+    sel.selectAll('foreignObject').remove();
+
+    const fo = sel.append('foreignObject')
       .attr('x', -LABEL_WIDTH / 2)
       .attr('y', NODE_RADIUS + 6)
       .attr('width', LABEL_WIDTH)
@@ -93,7 +153,7 @@ function initGraph(data) {
 
     const div = fo.append('xhtml:div')
       .attr('class', 'node-label')
-      .text(d.title);
+      .text(getTitle(d));
 
     renderMathInElement(div.node(), {
       delimiters: [
@@ -102,19 +162,23 @@ function initGraph(data) {
       ],
       throwOnError: false,
     });
-  });
+  }
+
+  nodeSel.each(function(d) { renderNodeLabel(d3.select(this), d); });
 
   // ── Force simulation ──────────────────────────────────────────
   const linkForce = d3.forceLink(data.edges)
     .id(d => d.id)
-    .distance(LEVEL_HEIGHT * 0.85)
-    .strength(0.3);
+    .distance(LEVEL_HEIGHT)
+    .strength(0.08);
 
   const simulation = d3.forceSimulation(nodeData)
     .force('link',    linkForce)
-    .force('charge',  d3.forceManyBody().strength(-600))
-    .force('collide', d3.forceCollide(NODE_RADIUS + 55))
-    .force('x',       d3.forceX(width / 2).strength(0.06))
+    .force('charge',  d3.forceManyBody().strength(-350))
+    .force('collide', d3.forceCollide(NODE_RADIUS + 50))
+    .force('x',       d3.forceX(width / 2).strength(0.04))
+    .alpha(0.3)
+    .alphaDecay(0.03)
     .on('tick', ticked);
 
   function ticked() {
@@ -145,20 +209,65 @@ function initGraph(data) {
   // ── Active node highlight ─────────────────────────────────────
   let activeNodeId = null;
 
+  function nodeColor(n) {
+    return n.node_type === 'axiom' ? COLOR_AXIOM : COLOR_THEOREM;
+  }
+
   function setActiveNode(d) {
-    // Restore previous
-    if (activeNodeId !== null) {
-      nodeSel.filter(n => n.id === activeNodeId)
-        .select('circle')
-        .attr('fill', n => n.node_type === 'axiom' ? COLOR_AXIOM : COLOR_THEOREM);
+    if (!d) {
+      // Reset everything
+      activeNodeId = null;
+      nodeSel.select('circle')
+        .attr('fill', nodeColor)
+        .style('opacity', 1);
+      nodeSel.select('foreignObject').style('opacity', 1);
+      edgeSel
+        .attr('stroke', '#3a3d4f')
+        .attr('stroke-width', 1.5)
+        .attr('marker-end', 'url(#arrowhead)')
+        .style('opacity', 1);
+      return;
     }
-    // Highlight new
-    activeNodeId = d ? d.id : null;
-    if (d) {
-      nodeSel.filter(n => n.id === d.id)
-        .select('circle')
-        .attr('fill', COLOR_ACTIVE);
+
+    activeNodeId = d.id;
+
+    // Find directly connected nodes
+    const preds = new Set();
+    const succs = new Set();
+    data.edges.forEach(e => {
+      const sid = typeof e.source === 'object' ? e.source.id : e.source;
+      const tid = typeof e.target === 'object' ? e.target.id : e.target;
+      if (tid === d.id) preds.add(sid);
+      if (sid === d.id) succs.add(tid);
+    });
+    const connected = new Set([...preds, ...succs, d.id]);
+
+    function isEdgeConnected(e) {
+      const sid = typeof e.source === 'object' ? e.source.id : e.source;
+      const tid = typeof e.target === 'object' ? e.target.id : e.target;
+      return sid === d.id || tid === d.id;
     }
+
+    // Dim / highlight nodes
+    nodeSel.select('circle')
+      .attr('fill', n => n.id === d.id ? COLOR_ACTIVE : nodeColor(n))
+      .style('opacity', n => connected.has(n.id) ? 1 : 0.12);
+
+    nodeSel.select('foreignObject')
+      .style('opacity', function() {
+        const nd = d3.select(this.parentNode).datum();
+        return connected.has(nd.id) ? 1 : 0.12;
+      });
+
+    // Dim / highlight edges — connected ones turn red and thick
+    edgeSel.each(function(e) {
+      const active = isEdgeConnected(e);
+      d3.select(this)
+        .attr('stroke',       active ? COLOR_ACTIVE : '#3a3d4f')
+        .attr('stroke-width', active ? 3 : 1)
+        .attr('marker-end',   active ? 'url(#arrowhead-active)' : 'url(#arrowhead)')
+        .style('opacity',     active ? 1 : 0.06);
+    });
   }
 
   // ── Proof panel ───────────────────────────────────────────────
@@ -170,7 +279,6 @@ function initGraph(data) {
 
   closeBtn.addEventListener('click', closePanel);
 
-  // Intercept clicks on cross-reference links inside proof text
   panelBody.addEventListener('click', e => {
     const link = e.target.closest('a[href^="#"]');
     if (!link) return;
@@ -180,19 +288,19 @@ function initGraph(data) {
     if (target) openPanel(target);
   });
 
-  function nodeColor(n) {
-    return n.node_type === 'axiom' ? COLOR_AXIOM : COLOR_THEOREM;
-  }
+  let activePanelNode = null;
 
   function openPanel(d) {
+    activePanelNode = d;
     setActiveNode(d);
 
-    panelTitle.textContent  = d.title.replace(/\$[^$]*\$/g, '').trim();
-    panelBadge.textContent  = d.node_type === 'axiom' ? 'Аксиома' : 'Теорема';
+    const title = getTitle(d);
+    panelTitle.textContent  = title.replace(/\$[^$]*\$/g, '').trim();
+    panelBadge.textContent  = t(d.node_type);
     panelBadge.className    = 'panel-type-badge ' + d.node_type;
     panelBadge.id           = 'panel-type-badge';
 
-    panelBody.innerHTML = marked.parse(d.description);
+    panelBody.innerHTML = marked.parse(getDescription(d));
     renderMathInElement(panelBody, {
       delimiters: [
         { left: '$$', right: '$$', display: true  },
@@ -208,14 +316,27 @@ function initGraph(data) {
   }
 
   function closePanel() {
+    activePanelNode = null;
     setActiveNode(null);
     panel.classList.remove('open');
   }
 
+  // ── Language switcher ─────────────────────────────────────────
+  function switchLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    applyI18n();
+    nodeSel.each(function(d) { renderNodeLabel(d3.select(this), d); });
+    if (activePanelNode) openPanel(activePanelNode);
+  }
+
+  document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
+  document.getElementById('lang-ru').addEventListener('click', () => switchLanguage('ru'));
+
   // ── Responsive resize ─────────────────────────────────────────
   window.addEventListener('resize', () => {
     const w = container.clientWidth;
-    simulation.force('x', d3.forceX(w / 2).strength(0.06));
+    simulation.force('x', d3.forceX(w / 2).strength(0.04));
     nodeData.forEach(n => { n.fy = levelY(n.level); });
     simulation.alpha(0.3).restart();
   });

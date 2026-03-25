@@ -1,0 +1,152 @@
+{
+  "description": "Базовые аксиомы и теоремы теории полей (аддитивная часть). Исходные seed-данные.",
+  "nodes": [
+    {
+      "slug": "axiom-closure-add",
+      "title_ru": "Замкнутость относительно сложения",
+      "title_en": "Closure under addition",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Замкнутость относительно сложения\n\nДля любых $a, b \\in \\mathbb{F}$:\n\n$$a + b \\in \\mathbb{F}$$\n\nЭто означает, что сложение двух элементов поля всегда даёт элемент того же поля. Данное свойство является **аксиомой** — оно принимается без доказательства как основа всей алгебраической системы.",
+      "description_en": "## Axiom: Closure under addition\n\nFor any $a, b \\in \\mathbb{F}$:\n\n$$a + b \\in \\mathbb{F}$$\n\nThis means that the sum of any two elements of the field is always an element of the same field. This property is an **axiom** — it is accepted without proof as the foundation of the entire algebraic system."
+    },
+    {
+      "slug": "axiom-commutativity-add",
+      "title_ru": "Коммутативность сложения",
+      "title_en": "Commutativity of addition",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Коммутативность сложения\n\nДля любых $a, b \\in \\mathbb{F}$:\n\n$$a + b = b + a$$\n\nПорядок слагаемых не влияет на результат. Это свойство — одна из основных аксиом поля, принимаемых без доказательства.",
+      "description_en": "## Axiom: Commutativity of addition\n\nFor any $a, b \\in \\mathbb{F}$:\n\n$$a + b = b + a$$\n\nThe order of the summands does not affect the result. This property is one of the fundamental axioms of a field, accepted without proof."
+    },
+    {
+      "slug": "axiom-associativity-add",
+      "title_ru": "Ассоциативность сложения",
+      "title_en": "Associativity of addition",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Ассоциативность сложения\n\nДля любых $a, b, c \\in \\mathbb{F}$:\n\n$$(a + b) + c = a + (b + c)$$\n\nПри сложении нескольких чисел результат не зависит от расстановки скобок. Данная аксиома позволяет нам писать $a + b + c$ без скобок.",
+      "description_en": "## Axiom: Associativity of addition\n\nFor any $a, b, c \\in \\mathbb{F}$:\n\n$$(a + b) + c = a + (b + c)$$\n\nWhen adding several numbers, the result does not depend on the placement of parentheses. This axiom allows us to write $a + b + c$ without parentheses."
+    },
+    {
+      "slug": "axiom-additive-identity",
+      "title_ru": "Существование нуля",
+      "title_en": "Existence of zero",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Существование нейтрального элемента (нуля)\n\nСуществует элемент $0 \\in \\mathbb{F}$ такой, что для любого $a \\in \\mathbb{F}$:\n\n$$a + 0 = a$$\n\nЭлемент $0$ называется **нейтральным элементом** (нулём) по сложению. Аксиома постулирует его существование, но не единственность — единственность будет **доказана** как теорема ([Единственность нуля](#thm-unique-zero)).",
+      "description_en": "## Axiom: Existence of the identity element (zero)\n\nThere exists an element $0 \\in \\mathbb{F}$ such that for any $a \\in \\mathbb{F}$:\n\n$$a + 0 = a$$\n\nThe element $0$ is called the **identity element** (zero) with respect to addition. The axiom postulates its existence but not its uniqueness — uniqueness will be **proved** as a theorem ([Uniqueness of zero](#thm-unique-zero))."
+    },
+    {
+      "slug": "axiom-additive-inverse",
+      "title_ru": "Существование противоположного элемента",
+      "title_en": "Existence of the additive inverse",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Существование противоположного элемента\n\nДля любого $a \\in \\mathbb{F}$ существует элемент $(-a) \\in \\mathbb{F}$ такой, что:\n\n$$a + (-a) = 0$$\n\nЭлемент $(-a)$ называется **противоположным** к $a$. Аксиома гарантирует его существование. Единственность будет доказана ([Единственность противоположного элемента](#thm-unique-inverse)).",
+      "description_en": "## Axiom: Existence of the additive inverse\n\nFor any $a \\in \\mathbb{F}$ there exists an element $(-a) \\in \\mathbb{F}$ such that:\n\n$$a + (-a) = 0$$\n\nThe element $(-a)$ is called the **additive inverse** of $a$. The axiom guarantees its existence. Uniqueness will be proved ([Uniqueness of the additive inverse](#thm-unique-inverse))."
+    },
+    {
+      "slug": "axiom-distributivity",
+      "title_ru": "Дистрибутивность",
+      "title_en": "Distributivity",
+      "node_type": "axiom",
+      "level": 0,
+      "description_ru": "## Аксиома: Дистрибутивность умножения относительно сложения\n\nДля любых $a, b, c \\in \\mathbb{F}$:\n\n$$a \\cdot (b + c) = a \\cdot b + a \\cdot c$$\n\nЭта аксиома связывает операции сложения и умножения, позволяя «раскрывать скобки». Из неё будут выведены многие важные свойства, в том числе [произведение на ноль](#thm-zero-product).",
+      "description_en": "## Axiom: Distributivity of multiplication over addition\n\nFor any $a, b, c \\in \\mathbb{F}$:\n\n$$a \\cdot (b + c) = a \\cdot b + a \\cdot c$$\n\nThis axiom connects the operations of addition and multiplication, allowing one to expand parentheses. Many important properties will be derived from it, including [multiplication by zero](#thm-zero-product)."
+    },
+    {
+      "slug": "thm-unique-zero",
+      "title_ru": "Единственность нуля",
+      "title_en": "Uniqueness of zero",
+      "node_type": "theorem",
+      "level": 1,
+      "description_ru": "## Теорема: Нейтральный элемент по сложению единственен\n\n**Утверждение:** В поле $\\mathbb{F}$ существует ровно один нейтральный элемент по сложению.\n\n**Доказательство:**\n\nПредположим, что существуют два нуля: $0$ и $0'$, то есть:\n$$a + 0 = a \\quad \\text{и} \\quad a + 0' = a \\quad \\text{для всех } a$$\n\nПоложим $a = 0'$ в первом равенстве: $0' + 0 = 0'$.\nПоложим $a = 0$ во втором равенстве: $0 + 0' = 0$.\n\nПо [аксиоме коммутативности](#axiom-commutativity-add): $0' + 0 = 0 + 0'$, значит:\n$$0' = 0 \\quad \\blacksquare$$\n\n**Использованные аксиомы:** [существование нуля](#axiom-additive-identity), [коммутативность](#axiom-commutativity-add), [ассоциативность](#axiom-associativity-add).",
+      "description_en": "## Theorem: The identity element of addition is unique\n\n**Statement:** In a field $\\mathbb{F}$ there exists exactly one identity element with respect to addition.\n\n**Proof:**\n\nSuppose there exist two zeros: $0$ and $0'$, that is:\n$$a + 0 = a \\quad \\text{and} \\quad a + 0' = a \\quad \\text{for all } a$$\n\nSet $a = 0'$ in the first equality: $0' + 0 = 0'$.\nSet $a = 0$ in the second equality: $0 + 0' = 0$.\n\nBy the [commutativity axiom](#axiom-commutativity-add): $0' + 0 = 0 + 0'$, hence:\n$$0' = 0 \\quad \\blacksquare$$\n\n**Axioms used:** [existence of zero](#axiom-additive-identity), [commutativity](#axiom-commutativity-add), [associativity](#axiom-associativity-add)."
+    },
+    {
+      "slug": "thm-unique-inverse",
+      "title_ru": "Единственность противоположного элемента",
+      "title_en": "Uniqueness of the additive inverse",
+      "node_type": "theorem",
+      "level": 1,
+      "description_ru": "## Теорема: Противоположный элемент единственен\n\n**Утверждение:** Для каждого $a \\in \\mathbb{F}$ противоположный элемент $(-a)$ единственен.\n\n**Доказательство:**\n\nПусть $b$ и $c$ — оба противоположны к $a$:\n$$a + b = 0 \\quad \\text{и} \\quad a + c = 0$$\n\nРассмотрим:\n$$b = b + 0 = b + (a + c) = (b + a) + c = 0 + c = c$$\n\nЗдесь использовались:\n- [Существование нуля](#axiom-additive-identity): $b + 0 = b$\n- Подстановку $0 = a + c$\n- [Ассоциативность](#axiom-associativity-add)\n- [Существование противоположного](#axiom-additive-inverse): $b + a = 0$\n\nСледовательно, $b = c$. $\\blacksquare$",
+      "description_en": "## Theorem: The additive inverse is unique\n\n**Statement:** For each $a \\in \\mathbb{F}$ the additive inverse $(-a)$ is unique.\n\n**Proof:**\n\nLet $b$ and $c$ both be additive inverses of $a$:\n$$a + b = 0 \\quad \\text{and} \\quad a + c = 0$$\n\nConsider:\n$$b = b + 0 = b + (a + c) = (b + a) + c = 0 + c = c$$\n\nThe following were used:\n- [Existence of zero](#axiom-additive-identity): $b + 0 = b$\n- Substitution $0 = a + c$\n- [Associativity](#axiom-associativity-add)\n- [Existence of the additive inverse](#axiom-additive-inverse): $b + a = 0$\n\nTherefore, $b = c$. $\\blacksquare$"
+    },
+    {
+      "slug": "thm-cancellation",
+      "title_ru": "Закон сокращения",
+      "title_en": "Cancellation law",
+      "node_type": "theorem",
+      "level": 1,
+      "description_ru": "## Теорема: Закон сокращения по сложению\n\n**Утверждение:** Если $a + b = a + c$, то $b = c$.\n\n**Доказательство:**\n\nДано: $a + b = a + c$. По [аксиоме существования противоположного](#axiom-additive-inverse) к $a$ существует $(-a)$. Прибавим $(-a)$ слева:\n\n$$(-a) + (a + b) = (-a) + (a + c)$$\n\nПо [ассоциативности](#axiom-associativity-add):\n$$((-a) + a) + b = ((-a) + a) + c$$\n$$0 + b = 0 + c$$\n\nПо [нейтральности нуля](#axiom-additive-identity) и [коммутативности](#axiom-commutativity-add):\n$$b = c \\quad \\blacksquare$$",
+      "description_en": "## Theorem: Cancellation law for addition\n\n**Statement:** If $a + b = a + c$, then $b = c$.\n\n**Proof:**\n\nGiven: $a + b = a + c$. By the [axiom of the additive inverse](#axiom-additive-inverse), there exists $(-a)$. Add $(-a)$ on the left:\n\n$$(-a) + (a + b) = (-a) + (a + c)$$\n\nBy [associativity](#axiom-associativity-add):\n$$((-a) + a) + b = ((-a) + a) + c$$\n$$0 + b = 0 + c$$\n\nBy the [identity element property](#axiom-additive-identity) and [commutativity](#axiom-commutativity-add):\n$$b = c \\quad \\blacksquare$$"
+    },
+    {
+      "slug": "thm-double-negation",
+      "title_ru": "Двойное отрицание: $-(-a) = a$",
+      "title_en": "Double negation: $-(-a) = a$",
+      "node_type": "theorem",
+      "level": 2,
+      "description_ru": "## Теорема: Двойное отрицание\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $-(-a) = a$.\n\n**Доказательство:**\n\nПо определению $(-a)$ — противоположный к $a$:\n$$a + (-a) = 0$$\n\nЗначит, $a$ является противоположным к $(-a)$. По теореме о [единственности противоположного элемента](#thm-unique-inverse):\n$$-(-a) = a \\quad \\blacksquare$$\n\n**Использованные результаты:** [существование противоположного](#axiom-additive-inverse), [единственность противоположного](#thm-unique-inverse).",
+      "description_en": "## Theorem: Double negation\n\n**Statement:** For any $a \\in \\mathbb{F}$: $-(-a) = a$.\n\n**Proof:**\n\nBy definition, $(-a)$ is the additive inverse of $a$:\n$$a + (-a) = 0$$\n\nThus, $a$ is the additive inverse of $(-a)$. By the theorem on the [uniqueness of the additive inverse](#thm-unique-inverse):\n$$-(-a) = a \\quad \\blacksquare$$\n\n**Results used:** [existence of the additive inverse](#axiom-additive-inverse), [uniqueness of the additive inverse](#thm-unique-inverse)."
+    },
+    {
+      "slug": "thm-zero-product",
+      "title_ru": "Произведение на ноль: $0 \\cdot a = 0$",
+      "title_en": "Multiplication by zero: $0 \\cdot a = 0$",
+      "node_type": "theorem",
+      "level": 2,
+      "description_ru": "## Теорема: Произведение любого элемента на ноль равно нулю\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $0 \\cdot a = 0$.\n\n**Доказательство:**\n\n$$0 \\cdot a = (0 + 0) \\cdot a$$\n\nПо [дистрибутивности](#axiom-distributivity):\n$$(0 + 0) \\cdot a = 0 \\cdot a + 0 \\cdot a$$\n\nОбозначим $x = 0 \\cdot a$. Тогда $x = x + x$. По [закону сокращения](#thm-cancellation):\n$$0 = x$$\n\n**Использованные результаты:** [существование нуля](#axiom-additive-identity), [дистрибутивность](#axiom-distributivity), [закон сокращения](#thm-cancellation).",
+      "description_en": "## Theorem: The product of any element with zero is zero\n\n**Statement:** For any $a \\in \\mathbb{F}$: $0 \\cdot a = 0$.\n\n**Proof:**\n\n$$0 \\cdot a = (0 + 0) \\cdot a$$\n\nBy [distributivity](#axiom-distributivity):\n$$(0 + 0) \\cdot a = 0 \\cdot a + 0 \\cdot a$$\n\nLet $x = 0 \\cdot a$. Then $x = x + x$. By the [cancellation law](#thm-cancellation):\n$$0 = x$$\n\n**Results used:** [existence of zero](#axiom-additive-identity), [distributivity](#axiom-distributivity), [cancellation law](#thm-cancellation)."
+    },
+    {
+      "slug": "thm-neg-one-product",
+      "title_ru": "$(-1) \\cdot a = -a$",
+      "title_en": "$(-1) \\cdot a = -a$",
+      "node_type": "theorem",
+      "level": 2,
+      "description_ru": "## Теорема: Умножение на $-1$\n\n**Утверждение:** Для любого $a \\in \\mathbb{F}$: $(-1) \\cdot a = -a$.\n\n**Доказательство:**\n\n$$a + (-1) \\cdot a = 1 \\cdot a + (-1) \\cdot a = (1 + (-1)) \\cdot a = 0 \\cdot a = 0$$\n\nИспользовались:\n- Аксиома нейтрального элемента умножения: $1 \\cdot a = a$\n- [Дистрибутивность](#axiom-distributivity)\n- [Произведение на ноль](#thm-zero-product): $0 \\cdot a = 0$\n\nТаким образом, $(-1) \\cdot a$ является противоположным к $a$. По [единственности противоположного](#thm-unique-inverse):\n$$(-1) \\cdot a = -a \\quad \\blacksquare$$",
+      "description_en": "## Theorem: Multiplication by $-1$\n\n**Statement:** For any $a \\in \\mathbb{F}$: $(-1) \\cdot a = -a$.\n\n**Proof:**\n\n$$a + (-1) \\cdot a = 1 \\cdot a + (-1) \\cdot a = (1 + (-1)) \\cdot a = 0 \\cdot a = 0$$\n\nThe following were used:\n- Axiom of the multiplicative identity element: $1 \\cdot a = a$\n- [Distributivity](#axiom-distributivity)\n- [Multiplication by zero](#thm-zero-product): $0 \\cdot a = 0$\n\nThus, $(-1) \\cdot a$ is the additive inverse of $a$. By the [uniqueness of the additive inverse](#thm-unique-inverse):\n$$(-1) \\cdot a = -a \\quad \\blacksquare$$"
+    },
+    {
+      "slug": "thm-neg-product",
+      "title_ru": "$(-a) \\cdot b = -(a \\cdot b)$",
+      "title_en": "$(-a) \\cdot b = -(a \\cdot b)$",
+      "node_type": "theorem",
+      "level": 3,
+      "description_ru": "## Теорема: Произведение противоположного элемента\n\n**Утверждение:** $(-a) \\cdot b = -(a \\cdot b)$.\n\n**Доказательство:**\n\n$$(-a) \\cdot b = ((-1) \\cdot a) \\cdot b = (-1) \\cdot (a \\cdot b) = -(a \\cdot b)$$\n\nПошагово:\n1. $(-a) = (-1) \\cdot a$ — по теореме [$(-1) \\cdot a = -a$](#thm-neg-one-product)\n2. Ассоциативность умножения\n3. Снова по теореме [$(-1) \\cdot a = -a$](#thm-neg-one-product)\n\n$\\blacksquare$",
+      "description_en": "## Theorem: Product of the additive inverse\n\n**Statement:** $(-a) \\cdot b = -(a \\cdot b)$.\n\n**Proof:**\n\n$$(-a) \\cdot b = ((-1) \\cdot a) \\cdot b = (-1) \\cdot (a \\cdot b) = -(a \\cdot b)$$\n\nStep by step:\n1. $(-a) = (-1) \\cdot a$ — by the theorem [$(-1) \\cdot a = -a$](#thm-neg-one-product)\n2. Associativity of multiplication\n3. Again by the theorem [$(-1) \\cdot a = -a$](#thm-neg-one-product)\n\n$\\blacksquare$"
+    },
+    {
+      "slug": "thm-neg-neg-product",
+      "title_ru": "$(-a)(-b) = ab$",
+      "title_en": "$(-a)(-b) = ab$",
+      "node_type": "theorem",
+      "level": 3,
+      "description_ru": "## Теорема: Произведение двух противоположных элементов\n\n**Утверждение:** $(-a)(-b) = a \\cdot b$.\n\n**Доказательство:**\n\n$$(-a)(-b) = -(a \\cdot (-b)) = -(-(a \\cdot b)) = a \\cdot b$$\n\nПошагово:\n1. По теореме [$(-a) \\cdot b = -(ab)$](#thm-neg-product) с заменой $b \\to (-b)$\n2. По той же теореме: $a \\cdot (-b) = -(ab)$\n3. По теореме [двойного отрицания](#thm-double-negation)\n\n$\\blacksquare$",
+      "description_en": "## Theorem: Product of two additive inverses\n\n**Statement:** $(-a)(-b) = a \\cdot b$.\n\n**Proof:**\n\n$$(-a)(-b) = -(a \\cdot (-b)) = -(-(a \\cdot b)) = a \\cdot b$$\n\nStep by step:\n1. By the theorem [$(-a) \\cdot b = -(ab)$](#thm-neg-product) with the substitution $b \\to (-b)$\n2. By the same theorem: $a \\cdot (-b) = -(ab)$\n3. By the [double negation](#thm-double-negation) theorem\n\n$\\blacksquare$"
+    }
+  ],
+  "edges": [
+    {"from": "axiom-associativity-add", "to": "thm-unique-zero"},
+    {"from": "axiom-additive-identity", "to": "thm-unique-zero"},
+    {"from": "axiom-commutativity-add", "to": "thm-unique-zero"},
+    {"from": "axiom-associativity-add", "to": "thm-unique-inverse"},
+    {"from": "axiom-additive-identity", "to": "thm-unique-inverse"},
+    {"from": "axiom-additive-inverse", "to": "thm-unique-inverse"},
+    {"from": "axiom-commutativity-add", "to": "thm-cancellation"},
+    {"from": "axiom-associativity-add", "to": "thm-cancellation"},
+    {"from": "axiom-additive-inverse", "to": "thm-cancellation"},
+    {"from": "thm-unique-inverse", "to": "thm-double-negation"},
+    {"from": "axiom-additive-inverse", "to": "thm-double-negation"},
+    {"from": "axiom-distributivity", "to": "thm-zero-product"},
+    {"from": "axiom-additive-identity", "to": "thm-zero-product"},
+    {"from": "thm-cancellation", "to": "thm-zero-product"},
+    {"from": "thm-double-negation", "to": "thm-neg-one-product"},
+    {"from": "thm-zero-product", "to": "thm-neg-one-product"},
+    {"from": "thm-neg-one-product", "to": "thm-neg-product"},
+    {"from": "thm-neg-product", "to": "thm-neg-neg-product"},
+    {"from": "thm-double-negation", "to": "thm-neg-neg-product"}
+  ]
+}
