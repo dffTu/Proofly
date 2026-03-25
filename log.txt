@@ -1,4 +1,0 @@
-dfftu@compute-vm-2-2-100-ssd-1774454841003:~/Proofly$ docker compose
-docker: unknown command: docker compose
-
-Run 'docker --help' for more information
