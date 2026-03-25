@@ -26,7 +26,7 @@ services:
       DATABASE_URL: postgres://proofly:proofly@db:5432/proofly
       DEBUG: "True"
       SECRET_KEY: proofly-dev-secret-key-change-in-production
-      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      ALLOWED_HOSTS: "*"
     depends_on:
       db:
         condition: service_healthy
