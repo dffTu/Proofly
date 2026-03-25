@@ -1,0 +1,85 @@
+Container proofly-db-1 Waiting 
+db-1  | 
+db-1  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+db-1  | 
+db-1  | 2026-03-25 15:53:46.887 UTC [1] LOG:  starting PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+db-1  | 2026-03-25 15:53:46.887 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1  | 2026-03-25 15:53:46.887 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1  | 2026-03-25 15:53:46.888 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1  | 2026-03-25 15:53:46.889 UTC [29] LOG:  database system was shut down at 2026-03-25 15:53:34 UTC
+db-1  | 2026-03-25 15:53:46.891 UTC [1] LOG:  database system is ready to accept connections
+Container proofly-db-1 Healthy 
+web-1  | Operations to perform:
+web-1  |   Apply all migrations: contenttypes, graph
+web-1  | Running migrations:
+web-1  |   No migrations to apply.
+web-1  | Watching for file changes with StatReloader
+web-1  | [25/Mar/2026 15:53:54] "GET / HTTP/1.1" 200 1882
+web-1  | [25/Mar/2026 15:53:54] "GET /static/graph/js/graph.js HTTP/1.1" 304 0
+web-1  | [25/Mar/2026 15:53:54] "GET /static/graph/css/styles.css HTTP/1.1" 304 0
+db-1   | 2026-03-25 15:53:54.980 UTC [42] ERROR:  relation "graph_node" does not exist at character 150
+db-1   | 2026-03-25 15:53:54.980 UTC [42] STATEMENT:  SELECT "graph_node"."id", "graph_node"."slug", "graph_node"."title", "graph_node"."node_type", "graph_node"."level", "graph_node"."description" FROM "graph_node" ORDER BY "graph_node"."level" ASC, "graph_node"."title" ASC
+db-1   | 2026-03-25 15:53:54.984 UTC [42] ERROR:  relation "graph_node" does not exist at character 150
+db-1   | 2026-03-25 15:53:54.984 UTC [42] STATEMENT:  SELECT "graph_node"."id", "graph_node"."slug", "graph_node"."title", "graph_node"."node_type", "graph_node"."level", "graph_node"."description" FROM "graph_node" ORDER BY "graph_node"."level" ASC, "graph_node"."title" ASC LIMIT 21
+db-1   | 2026-03-25 15:53:54.984 UTC [42] ERROR:  relation "graph_node" does not exist at character 150
+db-1   | 2026-03-25 15:53:54.984 UTC [42] STATEMENT:  SELECT "graph_node"."id", "graph_node"."slug", "graph_node"."title", "graph_node"."node_type", "graph_node"."level", "graph_node"."description" FROM "graph_node" ORDER BY "graph_node"."level" ASC, "graph_node"."title" ASC LIMIT 21
+db-1   | 2026-03-25 15:53:54.984 UTC [42] ERROR:  relation "graph_node" does not exist at character 150
+db-1   | 2026-03-25 15:53:54.984 UTC [42] STATEMENT:  SELECT "graph_node"."id", "graph_node"."slug", "graph_node"."title", "graph_node"."node_type", "graph_node"."level", "graph_node"."description" FROM "graph_node" ORDER BY "graph_node"."level" ASC, "graph_node"."title" ASC LIMIT 21
+web-1  | Internal Server Error: /api/graph/
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+web-1  |     return self.cursor.execute(sql, params)
+web-1  |            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+web-1  | psycopg2.errors.UndefinedTable: relation "graph_node" does not exist
+web-1  | LINE 1: ...ph_node"."level", "graph_node"."description" FROM "graph_nod...
+web-1  |                                                              ^
+web-1  | 
+web-1  | 
+web-1  | The above exception was the direct cause of the following exception:
+web-1  | 
+web-1  | Traceback (most recent call last):
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+web-1  |     response = get_response(request)
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+web-1  |     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+web-1  |   File "/app/graph/views.py", line 20, in graph_data
+web-1  |     for node in Node.objects.all()
+web-1  |                 ~~~~~~~~~~~~~~~~^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/models/query.py", line 400, in __iter__
+web-1  |     self._fetch_all()
+web-1  |     ~~~~~~~~~~~~~~~^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/models/query.py", line 1886, in _fetch_all
+web-1  |     self._result_cache = list(self._iterable_class(self))
+web-1  |                          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+web-1  |     results = compiler.execute_sql(
+web-1  |         chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+web-1  |     )
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+web-1  |     cursor.execute(sql, params)
+web-1  |     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+web-1  |     return super().execute(sql, params)
+web-1  |            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+web-1  |     return self._execute_with_wrappers(
+web-1  |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+web-1  |         sql, params, many=False, executor=self._execute
+web-1  |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |     )
+web-1  |     ^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+web-1  |     return executor(sql, params, many, context)
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+web-1  |     with self.db.wrap_database_errors:
+web-1  |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+web-1  |     raise dj_exc_value.with_traceback(traceback) from exc_value
+web-1  |   File "/usr/local/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+web-1  |     return self.cursor.execute(sql, params)
+web-1  |            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+web-1  | django.db.utils.ProgrammingError: relation "graph_node" does not exist
+web-1  | LINE 1: ...ph_node"."level", "graph_node"."description" FROM "graph_nod...
+web-1  |                                                              ^
+web-1  | 
+web-1  | [25/Mar/2026 15:53:54] "GET /api/graph/ HTTP/1.1" 500 110708
