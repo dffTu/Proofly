@@ -263,9 +263,8 @@ function initGraph(data) {
       .style('opacity', n => connected.has(n.id) ? 1 : 0.12);
 
     nodeSel.select('foreignObject')
-      .style('opacity', function() {
-        const nd = d3.select(this.parentNode).datum();
-        return connected.has(nd.id) ? 1 : 0.12;
+      .style('opacity', function(n) {
+        return connected.has(n.id) ? 1 : 0.12;
       });
 
     // Dim / highlight edges — connected ones turn red and thick
@@ -388,9 +387,7 @@ function initGraph(data) {
     nodeSel.select('circle')
       .attr('fill', nodeColor)
       .style('opacity', n => matchIds.has(n.id) ? 1 : 0.1);
-    nodeSel.select('foreignObject').style('opacity', function() {
-      return matchIds.has(d3.select(this.parentNode).datum().id) ? 1 : 0.1;
-    });
+    nodeSel.select('foreignObject').style('opacity', n => matchIds.has(n.id) ? 1 : 0.1);
     edgeSel
       .attr('stroke', '#3a3d4f').attr('stroke-width', 1)
       .attr('marker-end', 'url(#arrowhead)').style('opacity', 0.05);

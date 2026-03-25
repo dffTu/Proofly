@@ -1,0 +1,14 @@
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - certbot
+  - python3-certbot-nginx
+  - nginx
+  - git
+
+runcmd:
+  - systemctl enable docker nginx
+  - systemctl start docker nginx
+  - usermod -aG docker ubuntu
