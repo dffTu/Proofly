@@ -88,11 +88,22 @@ function initGraph(data) {
 
   const mainGroup = svg.append('g').attr('class', 'main');
 
+  // ── Label overlay (HTML divs on top of SVG — works in Safari/mobile) ──
+  const labelOverlay = document.createElement('div');
+  labelOverlay.id = 'label-overlay';
+  container.appendChild(labelOverlay);
+
+  const labelMap = new Map();   // node.id → HTMLDivElement
+
   // ── Zoom & pan ────────────────────────────────────────────────
   svg.call(
     d3.zoom()
       .scaleExtent([0.3, 3])
-      .on('zoom', e => mainGroup.attr('transform', e.transform))
+      .on('zoom', e => {
+        mainGroup.attr('transform', e.transform);
+        labelOverlay.style.transform =
+          `translate(${e.transform.x}px,${e.transform.y}px) scale(${e.transform.k})`;
+      })
   );
 
   // ── Edges ─────────────────────────────────────────────────────
@@ -144,20 +155,16 @@ function initGraph(data) {
     .attr('r', NODE_RADIUS)
     .attr('fill', d => d.node_type === 'axiom' ? COLOR_AXIOM : COLOR_THEOREM);
 
-  function renderNodeLabel(sel, d) {
-    sel.selectAll('foreignObject').remove();
-
-    const fo = sel.append('foreignObject')
-      .attr('x', -LABEL_WIDTH / 2)
-      .attr('y', NODE_RADIUS + 6)
-      .attr('width', LABEL_WIDTH)
-      .attr('height', 80);
-
-    const div = fo.append('xhtml:div')
-      .attr('class', 'node-label')
-      .text(getTitle(d));
-
-    renderMathInElement(div.node(), {
+  function renderNodeLabel(nodeId, d) {
+    let label = labelMap.get(nodeId);
+    if (!label) {
+      label = document.createElement('div');
+      label.className = 'node-label';
+      labelOverlay.appendChild(label);
+      labelMap.set(nodeId, label);
+    }
+    label.textContent = getTitle(d);
+    renderMathInElement(label, {
       delimiters: [
         { left: '$$', right: '$$', display: true  },
         { left: '$',  right: '$',  display: false },
@@ -166,7 +173,7 @@ function initGraph(data) {
     });
   }
 
-  nodeSel.each(function(d) { renderNodeLabel(d3.select(this), d); });
+  nodeSel.each(function(d) { renderNodeLabel(d.id, d); });
 
   // ── Force simulation ──────────────────────────────────────────
   const linkForce = d3.forceLink(data.edges)
@@ -191,6 +198,15 @@ function initGraph(data) {
       .attr('y2', d => d.target.fy);
 
     nodeSel.attr('transform', d => `translate(${d.x},${d.fy})`);
+
+    // Position HTML labels in SVG coordinate space
+    nodeData.forEach(d => {
+      const label = labelMap.get(d.id);
+      if (label) {
+        label.style.left = (d.x - LABEL_WIDTH / 2) + 'px';
+        label.style.top  = (d.fy + NODE_RADIUS + 6) + 'px';
+      }
+    });
   }
 
   // ── Drag handlers ─────────────────────────────────────────────
@@ -227,7 +243,7 @@ function initGraph(data) {
       nodeSel.select('circle')
         .attr('fill', nodeColor)
         .style('opacity', 1);
-      nodeSel.select('foreignObject').style('opacity', 1);
+      labelMap.forEach(label => { label.style.opacity = '1'; });
       edgeSel
         .attr('stroke', '#3a3d4f')
         .attr('stroke-width', 1.5)
@@ -262,10 +278,10 @@ function initGraph(data) {
       .attr('fill', n => n.id === d.id ? COLOR_ACTIVE : nodeColor(n))
       .style('opacity', n => connected.has(n.id) ? 1 : 0.12);
 
-    nodeSel.select('foreignObject')
-      .style('opacity', function(n) {
-        return connected.has(n.id) ? 1 : 0.12;
-      });
+    nodeData.forEach(n => {
+      const label = labelMap.get(n.id);
+      if (label) label.style.opacity = connected.has(n.id) ? '1' : '0.12';
+    });
 
     // Dim / highlight edges — connected ones turn red and thick
     edgeSel.each(function(e) {
@@ -344,7 +360,7 @@ function initGraph(data) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
     applyI18n();
-    nodeSel.each(function(d) { renderNodeLabel(d3.select(this), d); });
+    nodeSel.each(function(d) { renderNodeLabel(d.id, d); });
     if (activePanelNode) openPanel(activePanelNode);
   }
 
@@ -378,7 +394,7 @@ function initGraph(data) {
   function highlightSearchMatches(matchIds) {
     if (!matchIds || !matchIds.size) {
       nodeSel.select('circle').attr('fill', nodeColor).style('opacity', 1);
-      nodeSel.select('foreignObject').style('opacity', 1);
+      labelMap.forEach(label => { label.style.opacity = '1'; });
       edgeSel
         .attr('stroke', '#3a3d4f').attr('stroke-width', 1.5)
         .attr('marker-end', 'url(#arrowhead)').style('opacity', 1);
@@ -387,7 +403,10 @@ function initGraph(data) {
     nodeSel.select('circle')
       .attr('fill', nodeColor)
       .style('opacity', n => matchIds.has(n.id) ? 1 : 0.1);
-    nodeSel.select('foreignObject').style('opacity', n => matchIds.has(n.id) ? 1 : 0.1);
+    nodeData.forEach(n => {
+      const label = labelMap.get(n.id);
+      if (label) label.style.opacity = matchIds.has(n.id) ? '1' : '0.1';
+    });
     edgeSel
       .attr('stroke', '#3a3d4f').attr('stroke-width', 1)
       .attr('marker-end', 'url(#arrowhead)').style('opacity', 0.05);
