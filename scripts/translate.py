@@ -18,7 +18,6 @@ import sys
 import argparse
 from pathlib import Path
 
-# Bootstrap Django
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proofly.settings')
 
@@ -28,7 +27,6 @@ django.setup()
 import anthropic
 from graph.models import Node  # noqa: E402
 
-# Claude Haiku 4.5 pricing (USD per token)
 INPUT_COST_PER_TOKEN  = 1.00 / 1_000_000
 OUTPUT_COST_PER_TOKEN = 5.00 / 1_000_000
 
@@ -100,7 +98,6 @@ def main():
     skipped = 0
 
     for i, node in enumerate(nodes, 1):
-        # Pre-check: will this likely exceed budget?
         estimated = estimate_cost((node.title_en or '') + (node.description_en or ''))
         if spent + estimated > args.budget:
             print(f'Budget limit reached after {done} translations '
@@ -110,17 +107,14 @@ def main():
         print(f'[{i}/{total}] {node.slug} … ', end='', flush=True)
 
         try:
-            # Translate title
             title_ru, cost_title = translate_text(client, node.title_en or node.slug)
             spent += cost_title
 
-            # Translate description
             description_ru, cost_desc = translate_text(
                 client, node.description_en or ''
             )
             spent += cost_desc
 
-            # Save immediately — don't lose progress
             node.title_ru       = title_ru.strip()
             node.description_ru = description_ru.strip()
             node.save(update_fields=['title_ru', 'description_ru'])

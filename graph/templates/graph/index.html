@@ -2,7 +2,6 @@
 {% block title %}Proofly — Граф теорем алгебры{% endblock %}
 
 {% block content %}
-<!-- Header -->
 <div id="header">
   <h1>Proofly</h1>
   <div class="search-wrapper">
@@ -26,12 +25,10 @@
   </div>
 </div>
 
-<!-- Graph canvas -->
 <div id="graph-container">
   <svg id="graph-svg"></svg>
 </div>
 
-<!-- Proof panel (slides in from right) -->
 <div id="proof-panel">
   <div id="panel-header">
     <span id="panel-type-badge" class="panel-type-badge"></span>
@@ -41,6 +38,5 @@
   <div id="panel-body"></div>
 </div>
 
-<!-- Bottom hint -->
 <div id="hint" data-i18n="hint"></div>
 {% endblock %}

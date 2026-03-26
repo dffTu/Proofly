@@ -12,7 +12,6 @@ body {
   height: 100vh;
 }
 
-/* ── Header ── */
 #header {
   position: fixed;
   top: 0;
@@ -59,7 +58,6 @@ body {
 .legend-dot.axiom  { background: #4a90d9; }
 .legend-dot.theorem { background: #e8a838; }
 
-/* ── Graph canvas ── */
 #graph-container {
   position: fixed;
   top: 52px;
@@ -78,7 +76,6 @@ body {
   cursor: grabbing;
 }
 
-/* ── Label overlay ── */
 #label-overlay {
   position: absolute;
   top: 0;
@@ -91,7 +88,6 @@ body {
   z-index: 1;
 }
 
-/* Nodes */
 .node circle {
   stroke: #fff;
   stroke-width: 1.5px;
@@ -123,15 +119,12 @@ body {
   color: #e8e8e8;
 }
 
-/* Edges */
 .edge {
   stroke: #3a3d4f;
   stroke-width: 1.5px;
   transition: opacity 0.25s ease, stroke-width 0.25s ease;
 }
 
-
-/* ── Proof panel ── */
 #proof-panel {
   position: fixed;
   top: 52px;
@@ -207,7 +200,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Markdown rendered content */
 #panel-body h2 {
   font-size: 1rem;
   font-weight: 600;
@@ -243,7 +235,6 @@ body {
   color: #a8d0ff;
 }
 
-/* ── Search ── */
 .search-wrapper {
   position: relative;
   margin-left: 1rem;
@@ -335,7 +326,6 @@ body {
   line-height: 1.4;
 }
 
-/* ── Language switcher ── */
 .lang-switcher {
   display: flex;
   align-items: center;
@@ -367,7 +357,6 @@ body {
   background: rgba(74, 144, 217, 0.1);
 }
 
-/* ── Hint ── */
 #hint {
   position: fixed;
   bottom: 1rem;

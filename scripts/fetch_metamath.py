@@ -17,7 +17,6 @@ import argparse
 import urllib.request
 from pathlib import Path
 
-# Bootstrap Django
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proofly.settings')
 
@@ -30,20 +29,14 @@ SET_MM_URL = (
     'https://raw.githubusercontent.com/metamath/set.mm/master/set.mm'
 )
 
-# ── Algebra keyword filters ────────────────────────────────────────────────────
 ALGEBRA_PREFIXES = (
     'grp', 'abelgrp', 'ring', 'field', 'subgrp', 'nsg',
     'cring', 'drng', 'slmd', 'lmod', 'lvec',
     'mnd', 'cmn',
 )
 
-# Number of "primary" algebra theorems to seed the graph with.
-# All their transitive algebra dependencies will also be included,
-# so the total node count may be higher.
 SEED_THEOREMS = 100
 
-
-# ── Parser ────────────────────────────────────────────────────────────────────
 
 def iter_statements(text):
     """
@@ -56,9 +49,9 @@ def iter_statements(text):
     kind: 'axiom' | 'theorem'
     """
     pattern = re.compile(
-        r'(?:\$\((.*?)\$\)\s*)?'   # optional preceding comment
-        r'(\w+)\s+\$(a|p)\s+'      # label  $a or $p
-        r'(.*?)\$[=.]',            # body up to $= or $.
+        r'(?:\$\((.*?)\$\)\s*)?'
+        r'(\w+)\s+\$(a|p)\s+'
+        r'(.*?)\$[=.]',
         re.DOTALL,
     )
 
@@ -68,8 +61,6 @@ def iter_statements(text):
         kind    = 'axiom' if m.group(3) == 'a' else 'theorem'
         body    = m.group(4).strip()
 
-        # KEY FILTER: only real mathematical statements have typecode |-
-        # Skip class/wff notation definitions like: ccmn $a class CMn $.
         if not body.startswith('|-'):
             continue
 
@@ -94,11 +85,9 @@ def is_algebra(label):
     low = label.lower()
     if not low.startswith(ALGEBRA_PREFIXES):
         return False
-    # Reject known cross-domain leakage from 'cmn' prefix:
-    # topology (top, cl, int, op), complex numbers (c), limits, etc.
     NON_ALGEBRA_SUBSTRINGS = ('top', 'trcl', 'cls', 'open', 'clsd', 'cont', 'met')
     for s in NON_ALGEBRA_SUBSTRINGS:
-        if low[3:].startswith(s):   # skip the 3-char 'cmn' prefix
+        if low[3:].startswith(s):
             return False
     return True
 
@@ -124,7 +113,6 @@ def extract_title(label, comment):
         return label
 
     text = re.sub(r'\s+', ' ', comment).strip()
-    # Remove cross-references and backtick math for cleaner title
     text = re.sub(r'~\s*\w+', '', text)
     text = re.sub(r'`\s*(.*?)\s*`', r'\1', text)
     text = text.strip()
@@ -135,7 +123,6 @@ def extract_title(label, comment):
         if len(title) > 8:
             return title[:200]
 
-    # Fallback: first 80 chars
     short = text[:80].rstrip(' .,')
     return short if short else label
 
@@ -152,8 +139,6 @@ def comment_to_description(label, kind, comment):
     type_label = 'Axiom' if kind == 'axiom' else 'Theorem'
     return f'## {type_label}: {label}\n\n{text}'
 
-
-# ── Main ──────────────────────────────────────────────────────────────────────
 
 def load_set_mm(path):
     print(f'Reading {path} …')
@@ -179,19 +164,16 @@ def assign_roots_and_levels(nodes_dict, edges):
     topological sort + DP — correct for DAGs.
     Returns (node_types dict, levels dict).
     """
-    # Build adjacency structures
     in_degree  = {slug: 0 for slug in nodes_dict}
-    successors = {slug: [] for slug in nodes_dict}   # slug → nodes that depend on it
+    successors = {slug: [] for slug in nodes_dict}
     for from_slug, to_slug in edges:
         successors[from_slug].append(to_slug)
         in_degree[to_slug] += 1
 
-    # Roots = no incoming edges → treated as axioms
     node_types = {}
     for slug, info in nodes_dict.items():
         node_types[slug] = 'axiom' if in_degree[slug] == 0 else info['node_type']
 
-    # Topological sort (Kahn's algorithm) + DP for longest path
     from collections import deque
     levels = {slug: 0 for slug in nodes_dict}
     queue  = deque(slug for slug in nodes_dict if in_degree[slug] == 0)
@@ -206,7 +188,6 @@ def assign_roots_and_levels(nodes_dict, edges):
             if remaining[succ] == 0:
                 queue.append(succ)
 
-    # Nodes in cycles (if any) keep level 1
     for slug in nodes_dict:
         if levels[slug] == 0 and in_degree[slug] > 0:
             levels[slug] = 1
@@ -221,9 +202,8 @@ def run(set_mm_text, clear=True):
         Node.objects.all().delete()
         print('  Done.')
 
-    # ── Phase 1: parse ALL algebra |- statements from set.mm ──────────────────
-    all_algebra = {}         # slug → info dict
-    label_to_slug_map = {}   # original label → slug
+    all_algebra = {}
+    label_to_slug_map = {}
 
     for label, kind, comment, proof_refs in iter_statements(set_mm_text):
         if not is_algebra(label):
@@ -239,8 +219,6 @@ def run(set_mm_text, clear=True):
 
     print(f'Total algebra statements found in set.mm: {len(all_algebra)}')
 
-    # ── Phase 2: build algebra-only dependency map ─────────────────────────────
-    # algebra_deps[slug] = list of algebra slugs this node uses in its proof
     algebra_deps = {}
     for slug, info in all_algebra.items():
         deps = []
@@ -250,13 +228,9 @@ def run(set_mm_text, clear=True):
                 deps.append(ref_slug)
         algebra_deps[slug] = deps
 
-    # ── Phase 3 & 4: add theorems one by one; for each, complete its full
-    # algebra dependency closure before checking the limit.
-    # Stop seeding new theorems once total >= SEED_THEOREMS, but always
-    # finish the BFS for the theorem currently being processed.
     candidates = [
         slug for slug, info in all_algebra.items()
-        if len(info['comment']) > 30    # skip trivially-described nodes
+        if len(info['comment']) > 30
     ]
 
     included = set()
@@ -264,8 +238,7 @@ def run(set_mm_text, clear=True):
         if len(included) >= SEED_THEOREMS:
             break
         if slug in included:
-            continue  # already pulled in as a dependency
-        # BFS: add this theorem + all its transitive algebra deps
+            continue
         queue = [slug]
         while queue:
             s = queue.pop()
@@ -279,18 +252,15 @@ def run(set_mm_text, clear=True):
     algebra = {slug: all_algebra[slug] for slug in included}
     print(f'Total nodes (seeds + their deps, soft limit {SEED_THEOREMS}): {len(algebra)}')
 
-    # 2. Build edges (only between included nodes — no dangling edges)
     edges = []
     for slug in algebra:
         for dep_slug in algebra_deps.get(slug, []):
             if dep_slug in algebra:
-                edges.append((dep_slug, slug))  # dep → theorem
+                edges.append((dep_slug, slug))
     edges = list(set(edges))
 
-    # 3. Assign root nodes as axioms and compute levels
     node_types, levels = assign_roots_and_levels(algebra, edges)
 
-    # 4. Write nodes
     print('Writing nodes to database …')
     created = updated = 0
     for slug, info in algebra.items():
@@ -311,7 +281,6 @@ def run(set_mm_text, clear=True):
             updated += 1
     print(f'  Nodes: {created} created, {updated} updated')
 
-    # 5. Write edges
     print('Writing edges to database …')
     edge_created = edge_skipped = 0
     for from_slug, to_slug in edges:

@@ -8,7 +8,6 @@ const COLOR_AXIOM   = '#4a90d9';
 const COLOR_THEOREM = '#e8a838';
 const COLOR_ACTIVE  = '#e05555';
 
-// ── i18n ──────────────────────────────────────────────────────────
 let currentLang = localStorage.getItem('lang') || 'ru';
 
 const STRINGS = {
@@ -38,7 +37,6 @@ function applyI18n() {
   if (si) si.placeholder = t('search');
 }
 
-// ── Init ──────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   applyI18n();
   fetch('/api/graph/')
@@ -59,7 +57,6 @@ function initGraph(data) {
     return height - padding - level * LEVEL_HEIGHT;
   }
 
-  // ── Arrowhead markers ─────────────────────────────────────────
   const defs = svg.append('defs');
 
   defs.append('marker')
@@ -88,14 +85,12 @@ function initGraph(data) {
 
   const mainGroup = svg.append('g').attr('class', 'main');
 
-  // ── Label overlay (HTML divs on top of SVG — works in Safari/mobile) ──
   const labelOverlay = document.createElement('div');
   labelOverlay.id = 'label-overlay';
   container.appendChild(labelOverlay);
 
-  const labelMap = new Map();   // node.id → HTMLDivElement
+  const labelMap = new Map();
 
-  // ── Zoom & pan ────────────────────────────────────────────────
   svg.call(
     d3.zoom()
       .scaleExtent([0.3, 3])
@@ -106,7 +101,6 @@ function initGraph(data) {
       })
   );
 
-  // ── Edges ─────────────────────────────────────────────────────
   const edgeGroup = mainGroup.append('g').attr('class', 'edges');
 
   const edgeSel = edgeGroup.selectAll('line.edge')
@@ -115,10 +109,8 @@ function initGraph(data) {
       .attr('class', 'edge')
       .attr('marker-end', 'url(#arrowhead)');
 
-  // ── Nodes ─────────────────────────────────────────────────────
   const nodeGroup = mainGroup.append('g').attr('class', 'nodes');
 
-  // Spread nodes horizontally within each level for a clean initial layout
   const nodesByLevel = new Map();
   data.nodes.forEach(n => {
     if (!nodesByLevel.has(n.level)) nodesByLevel.set(n.level, []);
@@ -129,7 +121,6 @@ function initGraph(data) {
     const lvlNodes = nodesByLevel.get(n.level);
     const idx   = lvlNodes.indexOf(n);
     const count = lvlNodes.length;
-    // Give each node ~140px horizontal space so they don't overlap on start
     const neededWidth = count * 140;
     const spread = Math.max(neededWidth, width * 0.6);
     const startX = (width - spread) / 2;
@@ -175,7 +166,6 @@ function initGraph(data) {
 
   nodeSel.each(function(d) { renderNodeLabel(d.id, d); });
 
-  // ── Force simulation ──────────────────────────────────────────
   const linkForce = d3.forceLink(data.edges)
     .id(d => d.id)
     .distance(LEVEL_HEIGHT)
@@ -199,7 +189,6 @@ function initGraph(data) {
 
     nodeSel.attr('transform', d => `translate(${d.x},${d.fy})`);
 
-    // Position HTML labels in SVG coordinate space
     nodeData.forEach(d => {
       const label = labelMap.get(d.id);
       if (label) {
@@ -209,7 +198,6 @@ function initGraph(data) {
     });
   }
 
-  // ── Drag handlers ─────────────────────────────────────────────
   let didDrag = false;
 
   function dragStart(event, d) {
@@ -230,7 +218,6 @@ function initGraph(data) {
     d.fx = null;
   }
 
-  // ── Active node highlight ─────────────────────────────────────
   let activeNodeId = null;
 
   function nodeColor(n) {
@@ -256,7 +243,6 @@ function initGraph(data) {
 
     activeNodeId = d.id;
 
-    // Find directly connected nodes
     const preds = new Set();
     const succs = new Set();
     data.edges.forEach(e => {
@@ -273,7 +259,6 @@ function initGraph(data) {
       return sid === d.id || tid === d.id;
     }
 
-    // Dim / highlight nodes
     nodeSel.select('circle')
       .attr('fill', n => n.id === d.id ? COLOR_ACTIVE : nodeColor(n))
       .style('opacity', n => connected.has(n.id) ? 1 : 0.12);
@@ -283,7 +268,6 @@ function initGraph(data) {
       if (label) label.style.opacity = connected.has(n.id) ? '1' : '0.12';
     });
 
-    // Dim / highlight edges — connected ones turn red and thick
     edgeSel.each(function(e) {
       const active = isEdgeConnected(e);
       d3.select(this)
@@ -294,7 +278,6 @@ function initGraph(data) {
     });
   }
 
-  // ── Proof panel ───────────────────────────────────────────────
   const panel      = document.getElementById('proof-panel');
   const panelTitle = document.getElementById('panel-title');
   const panelBadge = document.getElementById('panel-type-badge');
@@ -318,8 +301,6 @@ function initGraph(data) {
     const wasOpen = panel.classList.contains('open');
     activePanelNode = d;
 
-    // Open panel FIRST (before highlight) so the slide-in transition
-    // doesn't cause a reflow that flickers the graph
     if (!wasOpen) panel.classList.add('open');
 
     const title = getTitle(d);
@@ -337,8 +318,6 @@ function initGraph(data) {
       throwOnError: false,
     });
 
-    // Apply highlight AFTER panel content is set, in next frame
-    // to avoid the panel slide-in transition causing reflow flicker
     if (!wasOpen) {
       requestAnimationFrame(() => setActiveNode(d));
     } else {
@@ -355,7 +334,6 @@ function initGraph(data) {
     panel.classList.remove('open');
   }
 
-  // ── Language switcher ─────────────────────────────────────────
   function switchLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
@@ -367,7 +345,6 @@ function initGraph(data) {
   document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
   document.getElementById('lang-ru').addEventListener('click', () => switchLanguage('ru'));
 
-  // ── Search ───────────────────────────────────────────────────
   const searchInput   = document.getElementById('search-input');
   const searchResults = document.getElementById('search-results');
 
@@ -426,10 +403,8 @@ function initGraph(data) {
       return title.includes(q) || desc.includes(q);
     });
 
-    // Выделяем ВСЕ подходящие на графе
     highlightSearchMatches(new Set(allMatches.map(n => n.id)));
 
-    // В dropdown — только первые 8
     const matches = allMatches.slice(0, 8);
     if (!matches.length) { searchResults.style.display = 'none'; return; }
 
@@ -453,7 +428,7 @@ function initGraph(data) {
     const node = nodeData.find(n => n.slug === item.dataset.slug);
     searchResults.style.display = 'none';
     searchInput.value = '';
-    if (node) openPanel(node);  // setActiveNode handles highlighting
+    if (node) openPanel(node);
   });
 
   document.addEventListener('click', e => {
@@ -471,7 +446,6 @@ function initGraph(data) {
     }
   });
 
-  // ── Responsive resize ─────────────────────────────────────────
   window.addEventListener('resize', () => {
     const w = container.clientWidth;
     simulation.force('x', d3.forceX(w / 2).strength(0.04));
